@@ -1,6 +1,6 @@
 {
-  "version": "20261014_181005",
-  "trainedAt": "2026-10-14T18:10:05.521134",
+  "version": "20261014_181251",
+  "trainedAt": "2026-10-14T18:12:51.660445",
   "algorithm": "Ridge",
   "features": [
     "hour",
