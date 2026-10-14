@@ -13,3 +13,4 @@ router.post('/detect-anomalies', ctrl.detectAnomalies);
 router.get('/recommendations', ctrl.getRecommendations);
 
 module.exports = router;
+

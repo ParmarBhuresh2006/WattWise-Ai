@@ -1,25 +1,13 @@
-"""
-data_loader.py — Load and validate energy readings from dicts/JSON payloads.
-"""
-
 import pandas as pd
 import numpy as np
 from typing import List, Dict, Any
 
-
 def load_from_records(records: List[Dict[str, Any]]) -> pd.DataFrame:
-    """
-    Convert a list of {date, kWh} dicts into a cleaned DataFrame.
-    Returns a DataFrame with columns: [ds, y] (Prophet-compatible naming).
-      ds = datetime (UTC-naive)
-      y  = kWh (float)
-    """
     if not records:
         raise ValueError("records list is empty")
 
     df = pd.DataFrame(records)
 
-    # Normalize column names
     df.columns = [c.lower().strip() for c in df.columns]
 
     date_col = next((c for c in df.columns if c in ('date', 'timestamp', 'time', 'readingdate')), None)
@@ -48,19 +36,12 @@ def load_from_records(records: List[Dict[str, Any]]) -> pd.DataFrame:
 
     return df[['ds', 'y']]
 
-
 def load_sample_data(n_days: int = 365) -> pd.DataFrame:
-    """
-    Generate clearly-labeled synthetic data for development/demo.
-    Uses realistic daily pattern: weekday/weekend, seasonal, and noise.
-    This is NOT real data and is labeled as such.
-    """
     np.random.seed(42)
     dates = pd.date_range(start='2023-01-01', periods=n_days, freq='D')
     day_of_week = dates.dayofweek
     month = dates.month
 
-    # Base: 10 kWh/day, weekends slightly higher, summer slightly higher
     base = 10.0
     weekday_factor = np.where(day_of_week >= 5, 1.15, 1.0)
     seasonal_factor = 1 + 0.2 * np.sin(2 * np.pi * (month - 1) / 12)

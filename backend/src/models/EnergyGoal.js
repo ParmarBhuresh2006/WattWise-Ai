@@ -47,3 +47,4 @@ const energyGoalSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('EnergyGoal', energyGoalSchema);
+

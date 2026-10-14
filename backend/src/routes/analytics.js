@@ -11,3 +11,4 @@ router.get('/consumption', analyticsCtrl.getConsumption);
 router.get('/cost', analyticsCtrl.getCostAnalysis);
 
 module.exports = router;
+

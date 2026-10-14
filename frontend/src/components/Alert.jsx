@@ -18,3 +18,4 @@ export default function Alert({ type = 'info', message, className = '' }) {
     </div>
   );
 }
+

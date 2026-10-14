@@ -8,3 +8,4 @@ router.get('/', ctrl.getSettings);
 router.put('/', ctrl.updateSettings);
 
 module.exports = router;
+

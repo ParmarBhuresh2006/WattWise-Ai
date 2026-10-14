@@ -71,7 +71,7 @@ export default function ForecastPage() {
       <Alert type="error" message={error} className="mb-4" />
       {trainMsg && <Alert type="success" message={trainMsg} className="mb-4" />}
 
-      {/* Status card */}
+      {}
       <div className="card mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -100,7 +100,7 @@ export default function ForecastPage() {
         )}
       </div>
 
-      {/* Train + Forecast controls */}
+      {}
       <div className="flex flex-wrap items-end gap-3 mb-6">
         <button onClick={() => handleTrain(false)} disabled={training || !status?.engineOnline} className="btn-primary">
           <Play className="h-4 w-4" />
@@ -128,7 +128,7 @@ export default function ForecastPage() {
         <Alert type="warning" message="ML Engine is offline. Start it with: cd ml-engine/src && python server.py" className="mb-4" />
       )}
 
-      {/* Forecast chart */}
+      {}
       {forecastWithCost && (
         <div className="card mb-6">
           <div className="flex items-center justify-between mb-1">
@@ -171,7 +171,7 @@ export default function ForecastPage() {
         </div>
       )}
 
-      {/* Model evaluation */}
+      {}
       {evaluation && (
         <div className="card">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
@@ -201,3 +201,4 @@ export default function ForecastPage() {
     </div>
   );
 }
+

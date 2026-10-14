@@ -4,7 +4,7 @@ const MlModelMeta = require('../models/MlModelMeta');
 const ML_HOST = process.env.ML_ENGINE_HOST || '127.0.0.1';
 const ML_PORT = process.env.ML_ENGINE_PORT || 8001;
 const ML_BASE = `http://${ML_HOST}:${ML_PORT}`;
-const ML_TIMEOUT_MS = 120000; // 2 minutes for training
+const ML_TIMEOUT_MS = 120000;
 
 async function mlFetch(path, options = {}) {
   const fetchFn = typeof globalThis.fetch === 'function' ? globalThis.fetch : (await import('node-fetch')).default;
@@ -23,19 +23,17 @@ async function mlFetch(path, options = {}) {
   }
 }
 
-// GET /api/v1/ml/status
 exports.getStatus = async (req, res, next) => {
   try {
     const result = await mlFetch('/health');
     const latestMeta = await MlModelMeta.findOne({ isActive: true }).sort({ trainedAt: -1 }).lean();
     res.json({ success: true, engineOnline: result.ok, model: latestMeta || null });
   } catch (err) {
-    // Engine might be offline — that's fine, report it
+
     res.json({ success: true, engineOnline: false, model: null, message: 'ML engine is not running.' });
   }
 };
 
-// POST /api/v1/ml/train
 exports.trainModel = async (req, res, next) => {
   try {
     const { useSample } = req.body || {};
@@ -45,7 +43,7 @@ exports.trainModel = async (req, res, next) => {
     if (useSample) {
       payload = { useSample: true, userId: String(req.user._id) };
     } else {
-      // Gather all readings for this user
+
       const readings = await EnergyReading.find({ user: req.user._id })
         .sort({ readingDate: 1 })
         .select('readingDate kWh meterId -_id')
@@ -79,7 +77,6 @@ exports.trainModel = async (req, res, next) => {
       return res.status(result.status).json({ success: false, message: result.data.message || 'Training failed.' });
     }
 
-    // Persist model metadata
     await MlModelMeta.updateMany({ isActive: true }, { isActive: false });
     const meta = await MlModelMeta.create({
       version: result.data.version,
@@ -101,7 +98,6 @@ exports.trainModel = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/ml/evaluation
 exports.getEvaluation = async (req, res, next) => {
   try {
     const result = await mlFetch('/evaluation');
@@ -111,7 +107,6 @@ exports.getEvaluation = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/ml/forecast
 exports.getForecast = async (req, res, next) => {
   try {
     const { horizon = 7 } = req.body;
@@ -152,7 +147,6 @@ exports.getForecast = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/ml/detect-anomalies
 exports.detectAnomalies = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.body || {};
@@ -192,10 +186,9 @@ exports.detectAnomalies = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/recommendations
 exports.getRecommendations = async (req, res, next) => {
   try {
-    // Build rule-based recommendations from actual readings
+
     const userId = req.user._id;
     const now = new Date();
     const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setDate(now.getDate() - 30);
@@ -226,7 +219,6 @@ exports.getRecommendations = async (req, res, next) => {
     const settings = req.user.settings || {};
     const tariff = settings.tariffPerKwh || 8.0;
 
-    // Recommendation 1: compare with previous period
     if (previous.length > 0 && prevTotal > 0) {
       const changePercent = ((recentTotal - prevTotal) / prevTotal) * 100;
       if (changePercent > 10) {
@@ -252,7 +244,6 @@ exports.getRecommendations = async (req, res, next) => {
       }
     }
 
-    // Recommendation 2: set a goal if none exists
     const EnergyGoal = require('../models/EnergyGoal');
     const activeGoals = await EnergyGoal.countDocuments({ user: userId, isActive: true });
     if (activeGoals === 0 && recent.length > 0) {
@@ -269,7 +260,6 @@ exports.getRecommendations = async (req, res, next) => {
       });
     }
 
-    // Recommendation 3: detect overnight spikes
     const overnightReadings = recent.filter((r) => {
       const h = new Date(r.readingDate).getHours();
       return h >= 22 || h <= 5;
@@ -290,7 +280,6 @@ exports.getRecommendations = async (req, res, next) => {
       }
     }
 
-    // Recommendation 4: tariff awareness
     if (tariff > 0 && recent.length > 0) {
       const monthlyCost = recentTotal * tariff + (settings.fixedMonthlyCharge || 0);
       recommendations.push({
@@ -309,3 +298,4 @@ exports.getRecommendations = async (req, res, next) => {
     next(err);
   }
 };
+

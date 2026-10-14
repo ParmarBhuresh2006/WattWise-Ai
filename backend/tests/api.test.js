@@ -1,7 +1,3 @@
-/**
- * Backend integration tests — run with: npm test (from backend/)
- * Requires: MongoDB running locally on 127.0.0.1:27017
- */
 process.env.NODE_ENV = 'test';
 process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/wattwise_test';
 process.env.JWT_SECRET = 'test_jwt_secret_32chars_minimum_xx';
@@ -12,7 +8,6 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../src/server');
 
-// ─── Test Data ────────────────────────────────────────────────────────────────
 const testUser = { name: 'Test User', email: 'test@example.com', password: 'TestPass123' };
 let token = '';
 let readingId = '';
@@ -22,7 +17,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // Clean up test data
+
   const User = require('../src/models/User');
   const EnergyReading = require('../src/models/EnergyReading');
   await User.deleteMany({ email: testUser.email });
@@ -30,7 +25,6 @@ afterAll(async () => {
   await mongoose.disconnect();
 });
 
-// ─── Auth Tests ───────────────────────────────────────────────────────────────
 describe('POST /api/v1/auth/register', () => {
   test('should register a new user', async () => {
     const res = await request(app).post('/api/v1/auth/register').send(testUser);
@@ -85,7 +79,6 @@ describe('GET /api/v1/auth/me', () => {
   });
 });
 
-// ─── Energy CRUD Tests ────────────────────────────────────────────────────────
 describe('Energy Records', () => {
   test('POST /api/v1/energy — should create a reading', async () => {
     const res = await request(app)
@@ -139,10 +132,9 @@ describe('Energy Records', () => {
   });
 });
 
-// ─── Analytics Tests ──────────────────────────────────────────────────────────
 describe('Analytics', () => {
   beforeAll(async () => {
-    // Create some readings for analytics
+
     const EnergyReading = require('../src/models/EnergyReading');
     const User = require('../src/models/User');
     const user = await User.findOne({ email: testUser.email });
@@ -174,7 +166,6 @@ describe('Analytics', () => {
   });
 });
 
-// ─── Settings Tests ───────────────────────────────────────────────────────────
 describe('Settings', () => {
   test('GET /api/v1/settings', async () => {
     const res = await request(app).get('/api/v1/settings').set('Authorization', `Bearer ${token}`);
@@ -192,7 +183,6 @@ describe('Settings', () => {
   });
 });
 
-// ─── Goals Tests ──────────────────────────────────────────────────────────────
 describe('Goals', () => {
   let goalId;
   test('POST /api/v1/goals', async () => {
@@ -222,17 +212,15 @@ describe('Goals', () => {
   });
 });
 
-// ─── Data isolation test ──────────────────────────────────────────────────────
 describe('Data Isolation', () => {
   let user2Token;
   test('User 2 cannot see User 1 readings', async () => {
-    // Register user 2
+
     const reg = await request(app).post('/api/v1/auth/register').send({
       name: 'User Two', email: 'user2@example.com', password: 'TestPass456',
     });
     user2Token = reg.body.token;
 
-    // User 2's readings should be empty
     const res = await request(app).get('/api/v1/energy').set('Authorization', `Bearer ${user2Token}`);
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBe(0);
@@ -244,7 +232,6 @@ describe('Data Isolation', () => {
   });
 });
 
-// ─── Recommendations Tests ───────────────────────────────────────────────────
 describe('Recommendations', () => {
   test('GET /api/v1/recommendations — returns data-backed recommendations', async () => {
     const res = await request(app).get('/api/v1/recommendations').set('Authorization', `Bearer ${token}`);
@@ -263,7 +250,6 @@ describe('Recommendations', () => {
   });
 });
 
-// ─── Sample Data Seeding & CSV Import Deduplication ───────────────────────────
 describe('Sample Seeding & Deduplication', () => {
   test('POST /api/v1/energy/seed-sample — seeds sample readings', async () => {
     const res = await request(app)
@@ -280,7 +266,7 @@ describe('Sample Seeding & Deduplication', () => {
       .post('/api/v1/energy/import')
       .set('Authorization', `Bearer ${token}`)
       .attach('file', Buffer.from('hello,world'), 'test.txt');
-    expect(res.status).toBe(500); // Multer fileFilter error triggers centralized handler
+    expect(res.status).toBe(500);
   });
 
   test('GET /health — health check returns 200', async () => {
@@ -290,3 +276,4 @@ describe('Sample Seeding & Deduplication', () => {
     expect(res.body.service).toBe('wattwise-backend');
   });
 });
+

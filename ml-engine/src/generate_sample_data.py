@@ -1,13 +1,3 @@
-"""
-generate_sample_data.py — Generate realistic sample CSV data for WattWise AI.
-
-Usage (from ml-engine/):
-  python src/generate_sample_data.py --days 365 --output data/raw/sample_energy.csv
-
-This script creates CLEARLY LABELED synthetic data for development and demonstration.
-It is NOT real energy measurement data.
-"""
-
 import argparse
 import csv
 import datetime
@@ -16,18 +6,7 @@ import random
 import os
 import sys
 
-
 def generate(n_days: int = 365, seed: int = 42) -> list:
-    """
-    Generate synthetic daily energy readings.
-    Returns list of dicts.
-    Realistic properties:
-    - Base ~10 kWh/day residential
-    - Weekends ~15% higher
-    - Summer (Jun-Aug) ~20% higher due to AC
-    - Occasional spikes (anomalies) ~5% of days
-    - Random day-to-day noise
-    """
     random.seed(seed)
     start = datetime.date.today() - datetime.timedelta(days=n_days)
 
@@ -35,24 +14,19 @@ def generate(n_days: int = 365, seed: int = 42) -> list:
     for i in range(n_days):
         d = start + datetime.timedelta(days=i)
         month = d.month
-        dow = d.weekday()  # 0=Mon, 6=Sun
+        dow = d.weekday()
 
-        # Base consumption
         base = 10.0
 
-        # Weekend factor
         if dow >= 5:
             base *= 1.15
 
-        # Seasonal factor (India: higher in summer Apr-Jun, moderate in winter)
         seasonal = 1.0 + 0.25 * math.sin(2 * math.pi * (month - 4) / 12)
         base *= max(0.8, seasonal)
 
-        # Random noise
         noise = random.gauss(0, 0.8)
         kwh = max(0.1, round(base + noise, 3))
 
-        # Occasional spike (anomaly) — ~4% of days
         if random.random() < 0.04:
             kwh = round(kwh * random.uniform(2.5, 4.0), 3)
 
@@ -66,7 +40,6 @@ def generate(n_days: int = 365, seed: int = 42) -> list:
 
     return records
 
-
 def write_csv(records: list, output_path: str):
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     with open(output_path, 'w', newline='') as f:
@@ -75,7 +48,6 @@ def write_csv(records: list, output_path: str):
         writer.writerows(records)
     print(f"[sample_gen] Written {len(records)} rows to {output_path}")
     print("[sample_gen] WARNING: This is synthetic data for demonstration — NOT real measurements.")
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

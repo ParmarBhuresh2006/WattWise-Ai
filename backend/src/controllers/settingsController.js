@@ -1,11 +1,9 @@
 const User = require('../models/User');
 
-// GET /api/v1/settings
 exports.getSettings = async (req, res) => {
   res.json({ success: true, data: req.user.settings || {} });
 };
 
-// PUT /api/v1/settings
 exports.updateSettings = async (req, res, next) => {
   try {
     const { tariffPerKwh, fixedMonthlyCharge, emissionFactor, currency } = req.body;
@@ -22,3 +20,4 @@ exports.updateSettings = async (req, res, next) => {
     next(err);
   }
 };
+

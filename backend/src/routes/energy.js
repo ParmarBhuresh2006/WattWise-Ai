@@ -8,7 +8,7 @@ const validate = require('../middleware/validate');
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
       cb(null, true);
@@ -50,3 +50,4 @@ router.put('/:id', [
 router.delete('/:id', ctrl.deleteReading);
 
 module.exports = router;
+

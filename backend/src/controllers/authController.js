@@ -4,7 +4,6 @@ const User = require('../models/User');
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 
-// POST /api/v1/auth/register
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -27,7 +26,6 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/auth/login
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -44,12 +42,10 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/auth/me
 exports.getMe = async (req, res) => {
   res.json({ success: true, user: req.user.toSafeObject() });
 };
 
-// PUT /api/v1/auth/me  — update name / password
 exports.updateMe = async (req, res, next) => {
   try {
     const { name, password } = req.body;
@@ -64,3 +60,4 @@ exports.updateMe = async (req, res, next) => {
     next(err);
   }
 };
+

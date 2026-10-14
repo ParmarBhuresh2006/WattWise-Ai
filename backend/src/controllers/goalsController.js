@@ -1,12 +1,10 @@
 const EnergyGoal = require('../models/EnergyGoal');
 const EnergyReading = require('../models/EnergyReading');
 
-// GET /api/v1/goals
 exports.getGoals = async (req, res, next) => {
   try {
     const goals = await EnergyGoal.find({ user: req.user._id }).sort({ createdAt: -1 });
 
-    // For each active goal, compute actual consumption so far
     const now = new Date();
     const enriched = await Promise.all(
       goals.map(async (goal) => {
@@ -34,7 +32,6 @@ exports.getGoals = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/goals
 exports.createGoal = async (req, res, next) => {
   try {
     const { title, targetKwh, period, startDate, endDate, notes } = req.body;
@@ -53,7 +50,6 @@ exports.createGoal = async (req, res, next) => {
   }
 };
 
-// PUT /api/v1/goals/:id
 exports.updateGoal = async (req, res, next) => {
   try {
     const goal = await EnergyGoal.findOne({ _id: req.params.id, user: req.user._id });
@@ -73,7 +69,6 @@ exports.updateGoal = async (req, res, next) => {
   }
 };
 
-// DELETE /api/v1/goals/:id
 exports.deleteGoal = async (req, res, next) => {
   try {
     const goal = await EnergyGoal.findOneAndDelete({ _id: req.params.id, user: req.user._id });
@@ -83,3 +78,4 @@ exports.deleteGoal = async (req, res, next) => {
     next(err);
   }
 };
+

@@ -1,13 +1,11 @@
 const EnergyReading = require('../models/EnergyReading');
 const { calculateFlatCost, estimateCarbonEmissions } = require('../utils/costCalculator');
 
-// GET /api/v1/analytics/summary
 exports.getSummary = async (req, res, next) => {
   try {
     const { period = 'monthly', year, month } = req.query;
     const userId = req.user._id;
 
-    // Build date range
     const now = new Date();
     let startDate, endDate, prevStart, prevEnd;
 
@@ -29,7 +27,7 @@ exports.getSummary = async (req, res, next) => {
       prevStart = new Date(startDate); prevStart.setDate(prevStart.getDate() - 7);
       prevEnd = new Date(endDate); prevEnd.setDate(prevEnd.getDate() - 7);
     } else {
-      // monthly (default)
+
       const y = year ? Number(year) : now.getFullYear();
       const m = month ? Number(month) - 1 : now.getMonth();
       startDate = new Date(y, m, 1);
@@ -46,7 +44,6 @@ exports.getSummary = async (req, res, next) => {
     const totalKwh = current.reduce((s, r) => s + r.kWh, 0);
     const prevKwh = previous.reduce((s, r) => s + r.kWh, 0);
 
-    // Days in current period
     const daysDiff = Math.max(1, Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1);
     const avgDaily = totalKwh / daysDiff;
 
@@ -82,7 +79,6 @@ exports.getSummary = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/analytics/consumption  — time series for charts
 exports.getConsumption = async (req, res, next) => {
   try {
     const { startDate, endDate, groupBy = 'day' } = req.query;
@@ -123,7 +119,6 @@ exports.getConsumption = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/analytics/cost
 exports.getCostAnalysis = async (req, res, next) => {
   try {
     const { months = 6 } = req.query;
@@ -159,3 +154,4 @@ exports.getCostAnalysis = async (req, res, next) => {
     next(err);
   }
 };
+

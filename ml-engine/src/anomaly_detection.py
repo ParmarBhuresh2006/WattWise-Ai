@@ -1,33 +1,16 @@
-"""
-anomaly_detection.py — Detect anomalous energy readings.
-
-Method: IQR-based robust statistical thresholding with rolling context.
-Rationale: Works on short datasets (≥7 points), interpretable, no black-box ML needed
-for anomaly detection when the goal is human-readable explanations.
-An Isolation Forest variant is also included for larger datasets.
-"""
-
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any
 
 from data_loader import load_from_records
 
-
 def detect_anomalies(records: List[Dict[str, Any]], method: str = 'auto') -> dict:
-    """
-    Detect anomalous readings.
-    method: 'iqr' | 'rolling' | 'isolation_forest' | 'auto'
-      'auto' selects IQR for small datasets (<100), rolling for medium, IsolationForest for large.
-    Returns dict with 'anomalies' list and 'method' used.
-    """
     df = load_from_records(records)
 
     n = len(df)
     if n < 7:
         raise ValueError(f"Need at least 7 readings; got {n}.")
 
-    # Select method
     if method == 'auto':
         if n < 50:
             method = 'iqr'
@@ -55,12 +38,7 @@ def detect_anomalies(records: List[Dict[str, Any]], method: str = 'auto') -> dic
         'description': _method_description(method),
     }
 
-
 def _iqr_method(df: pd.DataFrame) -> list:
-    """
-    Flag readings outside [Q1 - 2.5*IQR, Q3 + 2.5*IQR].
-    Using 2.5× rather than 1.5× to avoid over-flagging normal variation.
-    """
     y = df['y'].values
     q1, q3 = np.percentile(y, 25), np.percentile(y, 75)
     iqr = q3 - q1
@@ -90,11 +68,7 @@ def _iqr_method(df: pd.DataFrame) -> list:
 
     return sorted(anomalies, key=lambda x: x['score'], reverse=True)
 
-
 def _rolling_method(df: pd.DataFrame, window: int = 14, sigma: float = 2.5) -> list:
-    """
-    Flag readings that deviate > sigma standard deviations from their rolling window mean.
-    """
     df = df.copy()
     df['rolling_mean'] = df['y'].rolling(window, min_periods=5, center=True).mean()
     df['rolling_std']  = df['y'].rolling(window, min_periods=5, center=True).std()
@@ -123,19 +97,15 @@ def _rolling_method(df: pd.DataFrame, window: int = 14, sigma: float = 2.5) -> l
 
     return sorted(anomalies, key=lambda x: x['score'], reverse=True)
 
-
 def _isolation_forest_method(df: pd.DataFrame) -> list:
-    """
-    Use sklearn IsolationForest for anomaly detection on larger datasets.
-    """
     from sklearn.ensemble import IsolationForest
 
     y = df['y'].values.reshape(-1, 1)
     median = float(np.median(y))
 
     clf = IsolationForest(contamination=0.05, random_state=42)
-    labels = clf.fit_predict(y)           # -1 = anomaly, 1 = normal
-    scores = clf.score_samples(y)         # lower = more anomalous
+    labels = clf.fit_predict(y)
+    scores = clf.score_samples(y)
 
     anomalies = []
     for i, (_, row) in enumerate(df.iterrows()):
@@ -156,7 +126,6 @@ def _isolation_forest_method(df: pd.DataFrame) -> list:
             })
 
     return sorted(anomalies, key=lambda x: x['score'], reverse=True)
-
 
 def _method_description(method: str) -> str:
     descriptions = {

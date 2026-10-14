@@ -21,3 +21,4 @@ router.put('/:id', ctrl.updateGoal);
 router.delete('/:id', ctrl.deleteGoal);
 
 module.exports = router;
+

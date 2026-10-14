@@ -26,3 +26,4 @@ router.put('/me', protect, [
 ], ctrl.updateMe);
 
 module.exports = router;
+

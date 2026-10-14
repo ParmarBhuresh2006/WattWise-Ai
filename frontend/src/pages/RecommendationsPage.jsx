@@ -28,7 +28,7 @@ export default function RecommendationsPage() {
       await mlApi.dismissRecommendation(id);
       setRecs(r => r.filter(x => x.id !== id));
     } catch {
-      // Just filter locally
+
       setRecs(r => r.filter(x => x.id !== id));
     }
   };
@@ -103,10 +103,11 @@ export default function RecommendationsPage() {
       )}
 
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
-        These recommendations are generated from rule-based analysis of your actual data. 
+        These recommendations are generated from rule-based analysis of your actual data.
         Savings estimates are indicative based on your configured tariff.
         Always verify with your actual electricity bill.
       </div>
     </div>
   );
 }
+

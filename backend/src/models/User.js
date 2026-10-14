@@ -29,16 +29,15 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
     settings: {
-      tariffPerKwh: { type: Number, default: 8.0 },        // INR per kWh
-      fixedMonthlyCharge: { type: Number, default: 100 },  // INR
-      emissionFactor: { type: Number, default: 0.82 },     // kg CO₂ per kWh (India grid avg)
+      tariffPerKwh: { type: Number, default: 8.0 },
+      fixedMonthlyCharge: { type: Number, default: 100 },
+      emissionFactor: { type: Number, default: 0.82 },
       currency: { type: String, default: 'INR' },
     },
   },
   { timestamps: true }
 );
 
-// Hash password before save
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(12);
@@ -57,3 +56,4 @@ userSchema.methods.toSafeObject = function () {
 };
 
 module.exports = mongoose.model('User', userSchema);
+

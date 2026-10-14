@@ -7,13 +7,12 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore session from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem('ww_token');
     const stored = localStorage.getItem('ww_user');
     if (token && stored) {
       try { setUser(JSON.parse(stored)); } catch {}
-      // Optionally re-validate token
+
       authApi.getMe()
         .then(res => setUser(res.data.user))
         .catch(() => { localStorage.removeItem('ww_token'); localStorage.removeItem('ww_user'); })
@@ -65,3 +64,4 @@ export const useAuth = () => {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
+

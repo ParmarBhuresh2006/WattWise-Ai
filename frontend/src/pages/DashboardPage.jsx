@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
         <div className="flex justify-center py-16"><Spinner size="lg" /></div>
       ) : (
         <>
-          {/* ML Status Banner */}
+          {}
           {mlStatus && (
             <div className={`mb-4 px-4 py-2 rounded-lg border text-sm flex items-center gap-2
               ${mlStatus.engineOnline ? 'bg-green-50 border-green-200 text-green-800' : 'bg-yellow-50 border-yellow-200 text-yellow-800'}`}>
@@ -108,7 +108,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* KPI Grid */}
+          {}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <KpiCard title="Total Consumption" value={summary?.totalKwh?.toFixed(1)} unit="kWh"
               change={summary?.changePercent} Icon={Zap} color="brand" />
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               Icon={TrendingUp} color="brand" />
           </div>
 
-          {/* Trend Chart */}
+          {}
           <div className="card mb-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Daily Consumption — Last 30 Days</h3>
             {trend.length === 0 ? (
@@ -148,7 +148,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Period comparison */}
+          {}
           {summary && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="card">
@@ -198,3 +198,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

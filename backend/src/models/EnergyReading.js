@@ -49,8 +49,8 @@ const energyReadingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound index for efficient per-user date queries
 energyReadingSchema.index({ user: 1, readingDate: -1 });
 energyReadingSchema.index({ user: 1, meterId: 1, readingDate: -1 });
 
 module.exports = mongoose.model('EnergyReading', energyReadingSchema);
+

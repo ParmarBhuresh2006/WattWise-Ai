@@ -1,26 +1,3 @@
-/**
- * costCalculator.js — Configurable Electricity Tariff & Cost Estimator.
- * 
- * Implements Module D requirements:
- * - User-configurable price per kWh
- * - Optional fixed monthly charge
- * - Optional tariff slabs (tiered pricing)
- * - Estimated daily, weekly, and monthly costs
- * - Comparison between historical and predicted electricity expenses
- * - Carbon emission estimates (kg CO₂)
- * 
- * All functions are pure, deterministic, and unit-tested.
- */
-
-/**
- * Standard linear tariff calculation.
- * cost = (kWh * tariffPerKwh) + fixedMonthlyCharge
- * 
- * @param {number} kwh - Energy consumption in kilowatt-hours
- * @param {number} tariffPerKwh - Rate per kWh (e.g., INR 8.0)
- * @param {number} fixedMonthlyCharge - Optional fixed monthly surcharge
- * @returns {number} Estimated total cost rounded to 2 decimal places
- */
 function calculateFlatCost(kwh, tariffPerKwh = 8.0, fixedMonthlyCharge = 0) {
   if (typeof kwh !== 'number' || isNaN(kwh) || kwh < 0) {
     throw new Error('kWh must be a non-negative number');
@@ -33,22 +10,13 @@ function calculateFlatCost(kwh, tariffPerKwh = 8.0, fixedMonthlyCharge = 0) {
   return Number(total.toFixed(2));
 }
 
-/**
- * Tiered tariff (slab) calculation.
- * Slabs format: [ { upTo: 100, rate: 4.5 }, { upTo: 300, rate: 7.0 }, { upTo: Infinity, rate: 9.5 } ]
- * 
- * @param {number} kwh - Energy consumption in kWh
- * @param {Array<{upTo: number, rate: number}>} slabs - Progressive tariff brackets
- * @param {number} fixedMonthlyCharge - Fixed monthly charge
- * @returns {{ energyCost: number, fixedCharge: number, totalCost: number, breakdown: Array }}
- */
 function calculateSlabCost(kwh, slabs = [], fixedMonthlyCharge = 0) {
   if (typeof kwh !== 'number' || isNaN(kwh) || kwh < 0) {
     throw new Error('kWh must be a non-negative number');
   }
 
   if (!Array.isArray(slabs) || slabs.length === 0) {
-    // Fall back to flat tariff with default rate
+
     return {
       energyCost: calculateFlatCost(kwh, 8.0, 0),
       fixedCharge: Number((fixedMonthlyCharge || 0).toFixed(2)),
@@ -93,14 +61,6 @@ function calculateSlabCost(kwh, slabs = [], fixedMonthlyCharge = 0) {
   };
 }
 
-/**
- * Compares current vs previous period consumption and computes savings or cost increases.
- * 
- * @param {number} currentKwh - Current period total kWh
- * @param {number} previousKwh - Previous period total kWh
- * @param {number} tariffPerKwh - Configured tariff
- * @returns {object} Comparison results
- */
 function comparePeriodExpenses(currentKwh, previousKwh, tariffPerKwh = 8.0) {
   const currentCost = calculateFlatCost(currentKwh, tariffPerKwh, 0);
   const previousCost = calculateFlatCost(previousKwh, tariffPerKwh, 0);
@@ -121,14 +81,6 @@ function comparePeriodExpenses(currentKwh, previousKwh, tariffPerKwh = 8.0) {
   };
 }
 
-/**
- * Estimates carbon emissions from electricity consumption using a grid emission factor.
- * Default factor: 0.82 kg CO₂/kWh (Central Electricity Authority CEA India average).
- * 
- * @param {number} kwh - Energy consumption in kWh
- * @param {number} emissionFactor - kg CO₂ per kWh (default 0.82)
- * @returns {{ kgCO2: number, metricTonsCO2: number }}
- */
 function estimateCarbonEmissions(kwh, emissionFactor = 0.82) {
   if (typeof kwh !== 'number' || isNaN(kwh) || kwh < 0) {
     throw new Error('kWh must be a non-negative number');
@@ -144,3 +96,4 @@ module.exports = {
   comparePeriodExpenses,
   estimateCarbonEmissions,
 };
+

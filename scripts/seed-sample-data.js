@@ -1,8 +1,3 @@
-/**
- * seed-sample-data.js — CLI script to seed sample energy readings into MongoDB.
- * Usage: node scripts/seed-sample-data.js [email] [days]
- */
-
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../backend/.env') });
 
@@ -56,7 +51,6 @@ async function main() {
     });
   }
 
-  // Remove previous sample data for this user to avoid duplicates
   const deleted = await EnergyReading.deleteMany({ user: user._id, isSample: true });
   console.log(`[seed-sample] Cleared ${deleted.deletedCount} previous sample readings.`);
 
@@ -71,3 +65,4 @@ main().catch((err) => {
   console.error('[seed-sample] Error:', err.message);
   process.exit(1);
 });
+

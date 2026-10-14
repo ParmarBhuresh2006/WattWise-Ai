@@ -1,23 +1,8 @@
-"""
-server.py — Local loopback HTTP server for WattWise ML Engine.
-
-IMPORTANT: This server binds to 127.0.0.1 ONLY.
-It must never be exposed to the public network.
-
-Endpoints:
-  GET  /health
-  POST /train
-  GET  /evaluation
-  POST /forecast
-  POST /detect-anomalies
-"""
-
 import os
 import sys
 import json
 import traceback
 
-# Ensure src directory is on the path
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SRC_DIR)
 
@@ -31,10 +16,8 @@ app = Flask(__name__)
 
 REPORTS_DIR = os.path.join(SRC_DIR, '..', 'reports')
 
-
 def error_response(message: str, status: int = 500):
     return jsonify({'success': False, 'message': message}), status
-
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -47,7 +30,6 @@ def health():
         'algorithm': meta.get('algorithm'),
         'trainedAt': meta.get('trainedAt'),
     })
-
 
 @app.route('/train', methods=['POST'])
 def train_model():
@@ -67,7 +49,6 @@ def train_model():
         traceback.print_exc()
         return error_response(f'Training error: {str(e)}', 500)
 
-
 @app.route('/evaluation', methods=['GET'])
 def get_evaluation():
     report_path = os.path.join(REPORTS_DIR, 'evaluation_report.json')
@@ -76,7 +57,6 @@ def get_evaluation():
     with open(report_path) as f:
         report = json.load(f)
     return jsonify({'success': True, **report})
-
 
 @app.route('/forecast', methods=['POST'])
 def get_forecast():
@@ -98,7 +78,6 @@ def get_forecast():
         traceback.print_exc()
         return error_response(f'Forecast error: {str(e)}', 500)
 
-
 @app.route('/detect-anomalies', methods=['POST'])
 def detect():
     try:
@@ -116,7 +95,6 @@ def detect():
     except Exception as e:
         traceback.print_exc()
         return error_response(f'Detection error: {str(e)}', 500)
-
 
 if __name__ == '__main__':
     host = os.environ.get('ML_ENGINE_HOST', '127.0.0.1')

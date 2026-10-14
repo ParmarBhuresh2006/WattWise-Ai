@@ -95,7 +95,7 @@ export default function EnergyPage() {
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState('');
   const [success, setSuccess]     = useState('');
-  const [modal, setModal]         = useState(null); // null | 'add' | reading obj
+  const [modal, setModal]         = useState(null);
   const [page, setPage]           = useState(1);
   const [filters, setFilters]     = useState({ startDate: '', endDate: '' });
   const [importing, setImporting] = useState(false);
@@ -193,7 +193,7 @@ export default function EnergyPage() {
       {success && <Alert type="success" message={success} className="mb-4" />}
       {importing_error && <Alert type="error" message={importing_error} className="mb-4" />}
 
-      {/* Filters */}
+      {}
       <div className="card mb-4">
         <div className="flex flex-wrap items-end gap-3">
           <div>
@@ -212,7 +212,7 @@ export default function EnergyPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {}
       <div className="card overflow-hidden p-0">
         {loading ? (
           <div className="flex justify-center py-12"><Spinner /></div>
@@ -263,7 +263,7 @@ export default function EnergyPage() {
           </div>
         )}
 
-        {/* Pagination */}
+        {}
         {pagination.pages > 1 && (
           <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-600">
             <span>Page {page} of {pagination.pages} ({pagination.total} total)</span>
@@ -275,13 +275,13 @@ export default function EnergyPage() {
         )}
       </div>
 
-      {/* CSV tip */}
+      {}
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
         <strong>CSV format:</strong> Must include a <code>date</code> column (YYYY-MM-DD) and a <code>kWh</code> column.
         Optional columns: <code>meterId</code>, <code>category</code>, <code>notes</code>.
       </div>
 
-      {/* Modal */}
+      {}
       {modal && (
         <ReadingModal
           reading={modal === 'add' ? null : modal}
@@ -292,3 +292,4 @@ export default function EnergyPage() {
     </div>
   );
 }
+

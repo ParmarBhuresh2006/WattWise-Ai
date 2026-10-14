@@ -4,14 +4,12 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 const api = axios.create({ baseURL: BASE_URL });
 
-// Attach JWT token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ww_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle 401 globally
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -26,7 +24,6 @@ api.interceptors.response.use(
 
 export default api;
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
 export const authApi = {
   register: (data) => api.post('/auth/register', data),
   login:    (data) => api.post('/auth/login', data),
@@ -34,7 +31,6 @@ export const authApi = {
   updateMe: (data) => api.put('/auth/me', data),
 };
 
-// ─── Energy ───────────────────────────────────────────────────────────────────
 export const energyApi = {
   getReadings:   (params) => api.get('/energy', { params }),
   createReading: (data)   => api.post('/energy', data),
@@ -46,14 +42,12 @@ export const energyApi = {
   seedSample:    (days)   => api.post('/energy/seed-sample', { days }),
 };
 
-// ─── Analytics ────────────────────────────────────────────────────────────────
 export const analyticsApi = {
   getSummary:     (params) => api.get('/analytics/summary', { params }),
   getConsumption: (params) => api.get('/analytics/consumption', { params }),
   getCostAnalysis:(params) => api.get('/analytics/cost', { params }),
 };
 
-// ─── ML & Recommendations ───────────────────────────────────────────────────
 export const mlApi = {
   getStatus:             ()     => api.get('/ml/status'),
   train:                 (data) => api.post('/ml/train', data || {}),
@@ -64,7 +58,6 @@ export const mlApi = {
   dismissRecommendation: (id)   => api.post(`/recommendations/${id}/dismiss`),
 };
 
-// ─── Goals ────────────────────────────────────────────────────────────────────
 export const goalsApi = {
   getGoals:   ()         => api.get('/goals'),
   createGoal: (data)     => api.post('/goals', data),
@@ -72,8 +65,8 @@ export const goalsApi = {
   deleteGoal: (id)       => api.delete(`/goals/${id}`),
 };
 
-// ─── Settings ─────────────────────────────────────────────────────────────────
 export const settingsApi = {
   getSettings:    ()     => api.get('/settings'),
   updateSettings: (data) => api.put('/settings', data),
 };
+

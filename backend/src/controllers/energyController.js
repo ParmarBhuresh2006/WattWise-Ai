@@ -2,7 +2,6 @@ const EnergyReading = require('../models/EnergyReading');
 const { parse } = require('csv-parse/sync');
 const { stringify } = require('csv-stringify/sync');
 
-// GET /api/v1/energy
 exports.getReadings = async (req, res, next) => {
   try {
     const { startDate, endDate, meterId, page = 1, limit = 50 } = req.query;
@@ -31,7 +30,6 @@ exports.getReadings = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/energy
 exports.createReading = async (req, res, next) => {
   try {
     const { readingDate, kWh, meterId, category, notes } = req.body;
@@ -50,7 +48,6 @@ exports.createReading = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/energy/:id
 exports.getReading = async (req, res, next) => {
   try {
     const reading = await EnergyReading.findOne({ _id: req.params.id, user: req.user._id });
@@ -61,7 +58,6 @@ exports.getReading = async (req, res, next) => {
   }
 };
 
-// PUT /api/v1/energy/:id
 exports.updateReading = async (req, res, next) => {
   try {
     const { readingDate, kWh, meterId, category, notes } = req.body;
@@ -81,7 +77,6 @@ exports.updateReading = async (req, res, next) => {
   }
 };
 
-// DELETE /api/v1/energy/:id
 exports.deleteReading = async (req, res, next) => {
   try {
     const reading = await EnergyReading.findOneAndDelete({ _id: req.params.id, user: req.user._id });
@@ -92,7 +87,6 @@ exports.deleteReading = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/energy/import  — CSV upload
 exports.importCSV = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No CSV file uploaded.' });
@@ -109,7 +103,6 @@ exports.importCSV = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'CSV file is empty.' });
     }
 
-    // Detect column names (case-insensitive)
     const firstRow = records[0];
     const cols = Object.keys(firstRow).map((k) => k.toLowerCase());
     const dateCol = Object.keys(firstRow).find((k) => /date|timestamp|time/i.test(k));
@@ -161,7 +154,6 @@ exports.importCSV = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'No valid rows to import.', errors });
     }
 
-    // Deduplicate within the file itself
     const uniqueBatch = [];
     const seenBatchKeys = new Set();
     let intraFileDuplicates = 0;
@@ -176,7 +168,6 @@ exports.importCSV = async (req, res, next) => {
       uniqueBatch.push(item);
     }
 
-    // Check against existing database records for this user
     const dateValues = uniqueBatch.map((r) => r.readingDate.getTime());
     const minDate = new Date(Math.min(...dateValues));
     const maxDate = new Date(Math.max(...dateValues));
@@ -216,7 +207,6 @@ exports.importCSV = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/energy/export
 exports.exportCSV = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
@@ -245,7 +235,6 @@ exports.exportCSV = async (req, res, next) => {
   }
 };
 
-// POST /api/v1/energy/seed-sample — Populate realistic sample data for demonstration
 exports.seedSampleReadings = async (req, res, next) => {
   try {
     const days = Math.min(Math.max(Number(req.body.days || 60), 14), 365);
@@ -277,7 +266,6 @@ exports.seedSampleReadings = async (req, res, next) => {
       });
     }
 
-    // Filter out dates already present for this user
     const minDate = toInsert[0].readingDate;
     const maxDate = toInsert[toInsert.length - 1].readingDate;
     const existing = await EnergyReading.find({
@@ -308,3 +296,4 @@ exports.seedSampleReadings = async (req, res, next) => {
     next(err);
   }
 };
+

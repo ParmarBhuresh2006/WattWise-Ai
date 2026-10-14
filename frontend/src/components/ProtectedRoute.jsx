@@ -8,3 +8,4 @@ export default function ProtectedRoute() {
   if (loading) return <div className="flex items-center justify-center h-screen"><Spinner /></div>;
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
+

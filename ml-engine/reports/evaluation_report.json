@@ -1,6 +1,6 @@
 {
-  "version": "20261014_175416",
-  "trainedAt": "2026-10-14T17:54:16.395392",
+  "version": "20261014_181005",
+  "trainedAt": "2026-10-14T18:10:05.521134",
   "algorithm": "Ridge",
   "features": [
     "hour",
@@ -25,7 +25,7 @@
     "baselineMae": 1.114,
     "baselineRmse": 1.4102
   },
-  "modelPath": "D:\\Github\\WattWise Ai\\ml-engine\\src\\..\\models\\model.pkl",
+  "modelPath": "D:\\Github\\WattWise Ai\\ml-engine\\tests\\..\\src\\..\\models\\model.pkl",
   "usedSampleData": true,
   "testPredictions": [
     10.0089,

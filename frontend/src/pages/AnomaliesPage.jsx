@@ -37,7 +37,7 @@ export default function AnomaliesPage() {
 
       <Alert type="error" message={error} className="mb-4" />
 
-      {/* Controls */}
+      {}
       <div className="card mb-6">
         <div className="flex flex-wrap items-end gap-3">
           <div>
@@ -61,7 +61,7 @@ export default function AnomaliesPage() {
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : anomalies ? (
         <>
-          {/* Summary */}
+          {}
           <div className="grid grid-cols-3 gap-4 mb-6">
             {[
               { label: 'Readings analyzed', value: anomalies.totalReadings },
@@ -125,3 +125,4 @@ export default function AnomaliesPage() {
     </div>
   );
 }
+

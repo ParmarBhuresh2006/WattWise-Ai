@@ -1,8 +1,3 @@
-"""
-tests/test_ml.py — Unit tests for the WattWise ML pipeline.
-Run from ml-engine/ with: python -m pytest tests/ -v
-"""
-
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -12,8 +7,6 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
-
-# ─── data_loader tests ────────────────────────────────────────────────────────
 class TestDataLoader:
     def test_load_from_records_basic(self):
         from data_loader import load_from_records
@@ -31,7 +24,7 @@ class TestDataLoader:
         from data_loader import load_from_records
         records = [
             {'date': '2024-01-01', 'kWh': 10.0},
-            {'date': '2024-01-02', 'kWh': -5.0},   # should be dropped
+            {'date': '2024-01-02', 'kWh': -5.0},
             {'date': '2024-01-03', 'kWh': 8.0},
         ]
         df = load_from_records(records)
@@ -42,11 +35,11 @@ class TestDataLoader:
         from data_loader import load_from_records
         records = [
             {'date': '2024-01-01', 'kWh': 10.0},
-            {'date': '2024-01-01', 'kWh': 12.0},  # duplicate date
+            {'date': '2024-01-01', 'kWh': 12.0},
             {'date': '2024-01-02', 'kWh': 9.0},
         ]
         df = load_from_records(records)
-        assert len(df) == 2  # duplicate removed
+        assert len(df) == 2
 
     def test_load_raises_on_empty(self):
         from data_loader import load_from_records
@@ -71,8 +64,6 @@ class TestDataLoader:
         assert 'y' in df.columns
         assert (df['y'] > 0).all()
 
-
-# ─── features tests ───────────────────────────────────────────────────────────
 class TestFeatures:
     def _make_df(self, n=30):
         dates = pd.date_range('2024-01-01', periods=n, freq='D')
@@ -90,11 +81,8 @@ class TestFeatures:
         from features import build_features
         df = self._make_df(60)
         feat = build_features(df, is_training=True)
-        # lag_1 at row i should equal y at row i-1 in the original
-        # Verify a few positions
         for i in range(1, min(5, len(feat))):
             expected_lag = df.iloc[feat.index[i] - 1]['y'] if feat.index[i] > 0 else np.nan
-            # Allow NaN at boundaries
             if not np.isnan(expected_lag):
                 assert abs(feat.iloc[i]['lag_1'] - expected_lag) < 1e-9
 
@@ -102,7 +90,6 @@ class TestFeatures:
         from features import build_features
         df = self._make_df(60)
         feat = build_features(df, is_training=True)
-        # Should have no NaN in feature columns after training mode
         assert not feat[['lag_1', 'lag_7', 'rolling_mean_7']].isnull().any().any()
 
     def test_future_features_count(self):
@@ -112,8 +99,6 @@ class TestFeatures:
         future = build_future_features(df, horizon)
         assert len(future) == horizon
 
-
-# ─── train tests ─────────────────────────────────────────────────────────────
 class TestTrain:
     def test_train_with_sample_data_returns_meta(self):
         from train import train
@@ -139,7 +124,6 @@ class TestTrain:
             train(records=tiny_records)
 
     def test_chronological_split_no_leakage(self):
-        """Verify train set precedes val which precedes test in time."""
         from features import build_features, FEATURE_NAMES
         from data_loader import load_sample_data
         import numpy as np
@@ -148,18 +132,14 @@ class TestTrain:
         n = len(df_feat)
         train_end = int(n * 0.70)
         val_end   = int(n * 0.85)
-        # All train dates before val dates before test dates
         train_dates = df_feat.iloc[:train_end]['ds'].values
         val_dates   = df_feat.iloc[train_end:val_end]['ds'].values
         test_dates  = df_feat.iloc[val_end:]['ds'].values
         assert train_dates.max() < val_dates.min()
         assert val_dates.max() < test_dates.min()
 
-
-# ─── predict tests ────────────────────────────────────────────────────────────
 class TestPredict:
     def setup_method(self):
-        """Ensure a model is trained before prediction tests."""
         from train import train
         train(use_sample=True)
 
@@ -195,7 +175,7 @@ class TestPredict:
         from data_loader import load_sample_data
         df = load_sample_data(60)
         records = [{'date': str(r['ds']), 'kWh': r['y']} for _, r in df.iterrows()]
-        result = forecast(records, horizon=200)  # should cap at 90
+        result = forecast(records, horizon=200)
         assert len(result['forecast']) == 90
 
     def test_forecast_too_few_records_raises(self):
@@ -204,13 +184,11 @@ class TestPredict:
         with pytest.raises(ValueError, match='at least 14'):
             forecast(tiny, horizon=7)
 
-
-# ─── anomaly detection tests ──────────────────────────────────────────────────
 class TestAnomalyDetection:
     def _make_records(self, n=30, spike_idx=15):
         dates = pd.date_range('2024-01-01', periods=n, freq='D')
         y = [10.0] * n
-        y[spike_idx] = 80.0  # obvious spike
+        y[spike_idx] = 80.0
         return [{'date': str(d.date()), 'kWh': v} for d, v in zip(dates, y)]
 
     def test_iqr_detects_obvious_spike(self):
@@ -219,7 +197,7 @@ class TestAnomalyDetection:
         result = detect_anomalies(records, method='iqr')
         assert result['anomalyCount'] > 0
         dates = [a['date'][:10] for a in result['anomalies']]
-        assert '2024-01-16' in dates  # spike at index 15 = Jan 16
+        assert '2024-01-16' in dates
 
     def test_rolling_detects_spike(self):
         from anomaly_detection import detect_anomalies
@@ -233,7 +211,6 @@ class TestAnomalyDetection:
         df = load_sample_data(100)
         records = [{'date': str(r['ds'].date()), 'kWh': r['y']} for _, r in df.iterrows()]
         result = detect_anomalies(records, method='iqr')
-        # Sample data has low variance — should flag very few or none
         assert result['anomalyCount'] <= 5
 
     def test_raises_on_too_few_records(self):

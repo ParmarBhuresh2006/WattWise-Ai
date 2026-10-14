@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
         <div className="flex justify-center py-16"><Spinner size="lg" /></div>
       ) : (
         <>
-          {/* Summary stats */}
+          {}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             {[
               { label: 'Total kWh', value: totalKwh.toFixed(1), unit: 'kWh' },
@@ -81,7 +81,7 @@ export default function AnalyticsPage() {
             ))}
           </div>
 
-          {/* Consumption chart */}
+          {}
           <div className="card mb-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Energy Consumption</h3>
             {consumption.length === 0 ? (
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
             )}
           </div>
 
-          {/* Cost chart */}
+          {}
           <div className="card">
             <h3 className="text-sm font-semibold text-gray-700 mb-4">Monthly Cost Estimate ({currency})</h3>
             {cost.length === 0 ? (
@@ -123,3 +123,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

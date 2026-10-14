@@ -1,9 +1,5 @@
 const { validationResult } = require('express-validator');
 
-/**
- * Express middleware that checks for validation errors from express-validator
- * and returns a 400 with a structured errors array if any are found.
- */
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -17,3 +13,4 @@ const validate = (req, res, next) => {
 };
 
 module.exports = validate;
+

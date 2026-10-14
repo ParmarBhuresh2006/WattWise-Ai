@@ -24,3 +24,4 @@ async function seedAdmin() {
 }
 
 seedAdmin().catch((err) => { console.error(err); process.exit(1); });
+
