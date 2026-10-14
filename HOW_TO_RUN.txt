@@ -1,0 +1,176 @@
+================================================================================
+                           WATTWISE AI
+AI-Powered Energy Consumption Optimizer for Sustainable Energy
+================================================================================
+
+This application is designed to run 100% OFFLINE on localhost (127.0.0.1).
+No cloud accounts, external AI APIs, or internet connection are required.
+
+--------------------------------------------------------------------------------
+1. PREREQUISITES
+--------------------------------------------------------------------------------
+Before starting, ensure the following are installed on your Windows PC:
+
+1. Node.js (v18.0.0 or higher)
+   - Verify: node --version
+   - Verify: npm --version
+
+2. Python (v3.10 or higher)
+   - Verify: python --version
+   - Verify: pip --version
+
+3. MongoDB Community Server (v6.0 or higher)
+   - Must be running locally on default port 27017.
+   - To start MongoDB service (Administrator Command Prompt):
+       net start MongoDB
+     Or run manually:
+       mongod --dbpath "D:\Github\WattWise Ai\data\db"
+
+--------------------------------------------------------------------------------
+2. FIRST-TIME SETUP (Run Once)
+--------------------------------------------------------------------------------
+Open a command prompt in the project root directory (d:\Github\WattWise Ai):
+
+Step A: Configure Environment Files
+   copy .env.example .env
+   copy .env.example backend\.env
+   (frontend/.env already contains VITE_API_URL=http://localhost:5000/api/v1)
+
+Step B: Install Backend Dependencies
+   cd backend
+   npm install
+   cd ..
+
+Step C: Install Frontend Dependencies
+   cd frontend
+   npm install
+   cd ..
+
+Step D: Install Python ML Dependencies
+   cd ml-engine
+   pip install -r requirements.txt
+   cd ..
+
+Step E: Seed Local Admin Account
+   cd backend
+   npm run seed:admin
+   cd ..
+
+   Default Credentials Created:
+     Email:    admin@wattwise.local
+     Password: Admin@WattWise2024
+
+--------------------------------------------------------------------------------
+3. HOW TO RUN THE APPLICATION
+--------------------------------------------------------------------------------
+
+OPTION 1: ONE-CLICK STARTUP (RECOMMENDED)
+-----------------------------------------
+Simply double-click the batch file or run in terminal:
+
+   scripts\start-all.bat
+
+This automatically opens 3 separate terminal windows:
+   [1] Python ML Engine      -> http://127.0.0.1:8001
+   [2] Node.js Express API   -> http://127.0.0.1:5000
+   [3] React Vite Frontend   -> http://localhost:5173
+
+(PowerShell users can alternatively run: .\scripts\start-all.ps1)
+
+
+OPTION 2: MANUAL STARTUP (3 Separate Terminals)
+-----------------------------------------------
+Terminal 1 (Python ML Engine):
+   cd "D:\Github\WattWise Ai\ml-engine\src"
+   python server.py
+
+Terminal 2 (Node.js Backend API):
+   cd "D:\Github\WattWise Ai\backend"
+   npm run dev
+
+Terminal 3 (React Frontend):
+   cd "D:\Github\WattWise Ai\frontend"
+   npm run dev
+
+--------------------------------------------------------------------------------
+4. ACCESSING THE APPLICATION
+--------------------------------------------------------------------------------
+Open your web browser and navigate to:
+
+   http://localhost:5173
+
+Sign in with:
+   Email:    admin@wattwise.local
+   Password: Admin@WattWise2024
+   (Or click "Create one" to register a new account)
+
+--------------------------------------------------------------------------------
+5. STEP-BY-STEP DEMO & TESTING FLOW
+--------------------------------------------------------------------------------
+Once logged in:
+
+1. Energy Records (/energy):
+   - Click the "Demo Data" button to instantly load 60 days of synthetic baseline
+     energy readings into your account.
+   - Or click "Import CSV" and select "ml-engine/data/raw/sample_energy.csv".
+   - You can also add manual readings or export to CSV.
+
+2. Main Dashboard (/dashboard):
+   - View dynamic KPI cards: Total kWh, Estimated Cost (INR), Average Daily Usage.
+   - Switch between Daily, Weekly, and Monthly views.
+   - Verify that the ML Engine status banner shows "Online".
+
+3. AI Forecasting (/forecast):
+   - Click "Train on My Data" to train the model on your loaded readings.
+     (Or click "Train with Sample Data (Demo)").
+   - Notice the system evaluates candidates and displays test MAE (e.g. 0.40 kWh)
+     vs baseline MAE.
+   - Select a 7-day or 14-day forecast horizon and click "Generate Forecast".
+
+4. Anomaly Detection (/anomalies):
+   - Click "Detect Anomalies" to run statistical outlier detection using the
+     IQR (Interquartile Range) algorithm.
+   - View detailed explanations for any unusual consumption spikes.
+
+5. Recommendations (/recommendations):
+   - Review actionable energy-saving recommendations derived from your actual
+     usage data and configured electricity tariff.
+   - Test the "Dismiss" button on any card.
+
+6. Energy Goals (/goals):
+   - Click "New Goal" to set a monthly kWh target (e.g. 150 kWh).
+   - View live visual progress bars showing actual consumption vs target.
+
+7. Reports (/reports):
+   - Select a date range and click "Generate Report".
+   - Test "Print / PDF" to open a clean, printable report view.
+   - Test "Export CSV" to download the report data.
+
+8. Settings (/settings):
+   - Adjust your electricity rate per kWh, fixed monthly charge, and grid
+     emission factor. All costs update dynamically across the entire app.
+
+--------------------------------------------------------------------------------
+6. RUNNING AUTOMATED TESTS
+--------------------------------------------------------------------------------
+
+1. To run Python Machine Learning Tests (25 tests):
+   cd "D:\Github\WattWise Ai\ml-engine"
+   python -m pytest tests/ -v
+
+2. To run Backend & Tariff Unit Tests (45 tests):
+   cd "D:\Github\WattWise Ai\backend"
+   npm test
+
+All 70 automated tests pass 100% offline.
+
+--------------------------------------------------------------------------------
+7. HOW TO STOP THE SERVICES
+--------------------------------------------------------------------------------
+- Press Ctrl + C in each of the running terminal windows, or close the windows.
+- To verify ports are released in PowerShell:
+    Get-NetTCPConnection -LocalPort 5000, 8001, 5173 -ErrorAction SilentlyContinue
+
+================================================================================
+                        END OF HOW TO RUN GUIDE
+================================================================================

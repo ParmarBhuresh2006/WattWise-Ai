@@ -1,0 +1,30 @@
+{
+  "version": "20261014_175416",
+  "trainedAt": "2026-10-14T17:54:16.395392",
+  "algorithm": "Ridge",
+  "features": [
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "month",
+    "day_of_year",
+    "week_of_year",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "rolling_mean_7",
+    "rolling_std_7",
+    "rolling_mean_14"
+  ],
+  "trainingSamples": 608,
+  "totalRecords": 730,
+  "metrics": {
+    "mae": 0.6816,
+    "rmse": 0.88,
+    "r2": 0.3819,
+    "baselineMae": 1.114,
+    "baselineRmse": 1.4102
+  },
+  "modelPath": "D:\\Github\\WattWise Ai\\ml-engine\\src\\..\\models\\model.pkl",
+  "usedSampleData": true
+}
